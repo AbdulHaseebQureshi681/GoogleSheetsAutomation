@@ -1,0 +1,237 @@
+{
+  "name": "Gym Email Campaign",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "workflow-schedule",
+      "notesInFlow": true,
+      "notes": "Runs every Monday at 9 AM\nChange to suit your needs"
+    },
+    {
+      "parameters": {
+        "url": "https://docs.google.com/spreadsheets/d/1uDufrhJdfYPgbNAPw7sLbxpbXfrnt4_fZzVWlkyGw7Y/export?format=csv&gid=1085790850",
+        "options": {}
+      },
+      "name": "Fetch Google Sheets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300],
+      "notesInFlow": true,
+      "notes": "Downloads CSV from Google Sheets"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "text": "={{ $json.data }}"
+      },
+      "name": "Parse CSV",
+      "type": "n8n-nodes-base.readBinaryFiles",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {
+          "destinationFieldName": "rows"
+        }
+      },
+      "name": "Split Into Rows",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [850, 300],
+      "notesInFlow": true,
+      "notes": "Processes each row individually"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.email }}",
+              "operation": "contains",
+              "value2": "@"
+            },
+            {
+              "value1": "={{ $json.email }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "name": "Filter Valid Emails",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 300],
+      "notesInFlow": true,
+      "notes": "Only sends to valid email addresses"
+    },
+    {
+      "parameters": {
+        "authentication": "generic",
+        "fromEmail": "={{ $env.EMAIL_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Partnership Opportunity with {{ $json.gym_name }}",
+        "emailType": "html",
+        "text": "Hello {{ $json.gym_name }} Team,\n\nWe hope this email finds you well!\n\nWe are reaching out to explore potential partnership opportunities with {{ $json.gym_name }}.\n\nPhone: {{ $json.phone }}\n\nWe would love to discuss how we can work together to benefit your members.\n\nBest regards,\n{{ $env.EMAIL_FROM_NAME }}",
+        "html": "<!DOCTYPE html>\n<html>\n<head>\n    <style>\n        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n        .container { max-width: 600px; margin: 0 auto; padding: 20px; }\n        .header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }\n        .content { background-color: #f9f9f9; padding: 30px; border: 1px solid #ddd; }\n        .footer { background-color: #333; color: white; padding: 15px; text-align: center; font-size: 12px; border-radius: 0 0 5px 5px; }\n        .button { background-color: #4CAF50; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <div class=\"header\">\n            <h1>Partnership Opportunity</h1>\n        </div>\n        <div class=\"content\">\n            <h2>Hello {{ $json.gym_name }} Team! 👋</h2>\n            <p>We hope this email finds you well!</p>\n            <p>We are reaching out to explore potential partnership opportunities with <strong>{{ $json.gym_name }}</strong>.</p>\n            <p><strong>Contact:</strong> {{ $json.phone }}</p>\n            <p>We would love to discuss how we can work together to benefit your members and grow our businesses together.</p>\n            <a href=\"#\" class=\"button\">Schedule a Meeting</a>\n            <p>Looking forward to hearing from you!</p>\n        </div>\n        <div class=\"footer\">\n            <p>Best regards,<br>{{ $env.EMAIL_FROM_NAME }}</p>\n            <p style=\"margin-top: 10px; font-size: 10px; color: #999;\">This is a test email sent via Mailtrap</p>\n        </div>\n    </div>\n</body>\n</html>",
+        "options": {
+          "smtpHost": "={{ $env.MAILTRAP_HOST }}",
+          "smtpPort": "={{ $env.MAILTRAP_PORT }}",
+          "smtpUser": "={{ $env.MAILTRAP_USERNAME }}",
+          "smtpPassword": "={{ $env.MAILTRAP_PASSWORD }}"
+        }
+      },
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1250, 300],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "Mailtrap SMTP"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Sends personalized email to each gym"
+    },
+    {
+      "parameters": {
+        "options": {
+          "delayTime": 1000
+        }
+      },
+      "name": "Rate Limit",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [1450, 300],
+      "webhookId": "rate-limit-wait",
+      "notesInFlow": true,
+      "notes": "Wait 1 second between emails"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Log success\nconst gymName = $input.first().json.gym_name;\nconst email = $input.first().json.email;\n\nconsole.log(`✅ Email sent to ${gymName} (${email})`);\n\nreturn $input.all();"
+      },
+      "name": "Log Success",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1650, 300],
+      "notesInFlow": true,
+      "notes": "Track sent emails"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Log skipped email\nconst gymName = $input.first().json.gym_name;\nconst email = $input.first().json.email || 'No email';\n\nconsole.log(`⏭️ Skipped ${gymName} - ${email}`);\n\nreturn [];"
+      },
+      "name": "Log Skipped",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1250, 500],
+      "notesInFlow": true,
+      "notes": "Track skipped rows"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Parse CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CSV": {
+      "main": [
+        [
+          {
+            "node": "Split Into Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Into Rows": {
+      "main": [
+        [
+          {
+            "node": "Filter Valid Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Valid Emails": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Skipped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Rate Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limit": {
+      "main": [
+        [
+          {
+            "node": "Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
