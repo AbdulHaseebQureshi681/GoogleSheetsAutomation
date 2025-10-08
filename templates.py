@@ -1,3 +1,4 @@
+
 def export_html_template(first_name="Proud Business Owner"):
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -13,14 +14,16 @@ def export_html_template(first_name="Proud Business Owner"):
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto; background: linear-gradient(180deg, #1f1f1f 0%, #141414 100%); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
                     
                     <!-- Logo Section -->
+                       <!-- Logo Section -->
                     <tr>
-                        <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);">
-                            <div style="width: 180px; height: 60px; margin: 0 auto; background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #404040;">
-                                <span style="color: #e0e0e0; font-size: 24px; font-weight: 700; letter-spacing: 2px;">YOUR LOGO</span>
+                        <td style="padding: 40px 40px 20px; text-align: center; background: #c2c2c2;">
+                            <div
+                                style="width: 9.5rem; height: 8rem; margin: 0 auto; background: #c2c2c2; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <img src="https://i.ibb.co/j9vQwWJg/Untitled-1.jpg" alt="Logo"
+                                    style="width:9rem; display:block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));" />
                             </div>
                         </td>
                     </tr>
-
                     <!-- Personal Greeting -->
                     <tr>
                         <td style="padding: 30px 40px 20px; text-align: left;">
@@ -243,6 +246,7 @@ def export_html_template(first_name="Proud Business Owner"):
 </html>
         """
 
+
 def export_html_websitenotfound_template(first_name="Proud Business Owner"):
     return f"""
 <!DOCTYPE html>
@@ -259,10 +263,13 @@ def export_html_websitenotfound_template(first_name="Proud Business Owner"):
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto; background: linear-gradient(180deg, #1f1f1f 0%, #141414 100%); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
                     
                     <!-- Logo Section -->
+                      <!-- Logo Section -->
                     <tr>
-                        <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);">
-                            <div style="width: 180px; height: 60px; margin: 0 auto; background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #404040;">
-                                <span style="color: #e0e0e0; font-size: 24px; font-weight: 700; letter-spacing: 2px;">YOUR LOGO</span>
+                        <td style="padding: 40px 40px 20px; text-align: center; background: #c2c2c2;">
+                            <div
+                                style="width: 9.5rem; height: 8rem; margin: 0 auto; background: #c2c2c2; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <img src="https://i.ibb.co/j9vQwWJg/Untitled-1.jpg" alt="Logo"
+                                    style="width:9rem; display:block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));" />
                             </div>
                         </td>
                     </tr>
